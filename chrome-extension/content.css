@@ -2,238 +2,278 @@
   display: inline-flex;
   position: relative;
   vertical-align: middle;
-  margin-left: 4px;
-  z-index: 10;
+  margin-left: 10px;
+  z-index: 1;
   flex-shrink: 0;
+  isolation: isolate;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Backdrop для попапа */
+.ps-popover-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 2147483646;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.ps-popover-backdrop.ps-backdrop-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .ps-price-badge-wrapper.ps-badge-block {
   display: flex;
   margin-left: 0;
-  margin-top: 4px;
+  margin-top: 3px;
+  width: 100%;
 }
+
+.ps-price-badge-wrapper.ps-badge-block .ps-price-badge {
+  width: fit-content;
+}
+
+/* ===============================
+   PRICE BADGE — CATALOG SAFE
+   =============================== */
 
 .ps-price-badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(0, 67, 156, 0.08);
-  border: 1px solid rgba(0, 67, 156, 0.15);
-  border-radius: 6px;
-  padding: 2px 7px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  line-height: 1.2;
+  gap: 6px;
+
+  padding: 3px 7px;
+  min-height: 22px;
+
+  background: #EAF1FF;
+  border: 1px solid #B6CCF5;
+  border-radius: 5px;
+
   box-shadow: none;
-  outline: none;
-  white-space: nowrap;
+  cursor: default;
 }
 
-.ps-price-badge:hover {
-  background: rgba(0, 67, 156, 0.14);
-  border-color: rgba(0, 67, 156, 0.25);
-}
-
-.ps-price-badge:active {
-  transform: scale(0.97);
-}
+/* TEXT */
 
 .ps-price-badge-text {
   font-size: 12px;
   font-weight: 600;
-  color: #3B82F6;
-  white-space: nowrap;
-  letter-spacing: -0.01em;
+  line-height: 1;
+
+  color: #1E3A8A; /* тёмно-синий, читаемый */
+  text-shadow: none;
+}
+
+/* ICON */
+
+.ps-price-badge-icon-wrapper {
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  border-radius: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ps-price-badge-icon {
-  width: 11px;
-  height: 11px;
-  color: #3B82F6;
-  opacity: 0.5;
-  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  opacity: 0.7;
+  color: #1E3A8A;
 }
 
-.ps-price-badge:hover .ps-price-badge-icon {
-  opacity: 0.8;
-}
+/* BLOCK MODE */
+/* Block mode styles are defined above in .ps-price-badge-wrapper.ps-badge-block */
 
-/* Dark mode badge */
+/* DARK MODE (если каталог тёмный) */
+
 .ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-badge {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.25);
+  background: #1E293B;
+  border-color: #334155;
 }
 
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-badge:hover {
-  background: rgba(59, 130, 246, 0.25);
-  border-color: rgba(59, 130, 246, 0.35);
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-badge-text {
-  color: #93B4FF;
-}
-
+.ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-badge-text,
 .ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-badge-icon {
-  color: #93B4FF;
+  color: #E5EDFF;
 }
 
-/* Popover */
+/* Popover - Современный темный дизайн */
 .ps-price-popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  width: 250px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  position: fixed;
+  width: 280px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.07),
-    0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
-  z-index: 999999;
+  z-index: 2147483647;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(-8px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   pointer-events: none;
+  will-change: transform, opacity;
+  backdrop-filter: blur(20px);
 }
 
 .ps-price-popover.ps-popover-visible {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
 .ps-popover-header {
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #FAFBFF;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  position: relative;
+}
+
+.ps-popover-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 .ps-popover-title {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #9CA3AF;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .ps-popover-live {
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
-  background: #00439C;
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
   color: white;
-  padding: 2px 7px;
-  border-radius: 10px;
-  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  box-shadow: 
+    0 2px 8px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .ps-popover-body {
-  padding: 10px 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
 }
 
 .ps-popover-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
+  padding: 4px 0;
 }
 
 .ps-popover-label {
-  color: #9CA3AF;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.02em;
 }
 
 .ps-popover-value {
   font-family: ui-monospace, "SF Mono", "Cascadia Mono", monospace;
-  color: #6B7280;
-  font-size: 11px;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
 }
 
 .ps-popover-total-row {
-  padding-top: 6px;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 2px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
+  padding-bottom: 4px;
+  position: relative;
+}
+
+.ps-popover-total-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
 .ps-popover-total-label {
   font-weight: 700;
-  color: #111827;
-  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  letter-spacing: 0.02em;
 }
 
 .ps-popover-total-value {
   font-weight: 800;
-  font-size: 16px;
-  color: #00439C;
-  letter-spacing: -0.02em;
+  font-size: 20px;
+  color: #60A5FA;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 8px rgba(96, 165, 250, 0.3);
+  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .ps-popover-insight {
-  margin-top: 2px;
-  padding-top: 6px;
-  border-top: 1px solid #f5f5f5;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 9px;
+  gap: 6px;
+  font-size: 10px;
   font-weight: 600;
-  color: #059669;
-}
-
-/* Dark mode popover */
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-popover {
-  background: #1F1F1F;
-  border-color: rgba(255,255,255,0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-header {
-  background: #252525;
-  border-bottom-color: rgba(255,255,255,0.06);
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-title {
-  color: #6B7280;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-live {
-  background: #3B82F6;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-label {
-  color: #6B7280;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-value {
-  color: #9CA3AF;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-total-row {
-  border-top-color: rgba(255,255,255,0.06);
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-total-label {
-  color: #F3F4F6;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-total-value {
-  color: #60A5FA;
-}
-
-.ps-price-badge-wrapper[data-ps-dark="true"] .ps-popover-insight {
-  border-top-color: rgba(255,255,255,0.06);
   color: #34D399;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.ps-popover-insight svg {
+  filter: drop-shadow(0 1px 2px rgba(52, 211, 153, 0.3));
+}
+
+/* Dark mode popover - используем тот же стиль, но с небольшими корректировками */
+.ps-price-badge-wrapper[data-ps-dark="true"] .ps-price-popover {
+  background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }

@@ -177,9 +177,18 @@
     badge.className = "ps-price-badge";
     badge.innerHTML = `
       <span class="ps-price-badge-text">≈ ${Math.floor(convertedPrice).toLocaleString()} ${symbol}</span>
-      <svg class="ps-price-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span class="ps-price-badge-icon-wrapper">
+        <svg class="ps-price-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+      </span>
     `;
 
+    const backdrop = document.createElement("div");
+    backdrop.className = "ps-popover-backdrop";
+    
     const popover = document.createElement("div");
     popover.className = "ps-price-popover";
     popover.innerHTML = `
@@ -208,22 +217,137 @@
     `;
 
     let isOpen = false;
+    
+    function updatePopoverPosition() {
+      if (!isOpen) return;
+      const badgeRect = badge.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const popoverWidth = 280;
+      const popoverHeight = 200;
+      const spacing = 8;
+      
+      // Пытаемся разместить справа от бейджа
+      let left = badgeRect.right + spacing;
+      let top = badgeRect.top;
+      
+      // Если не помещается справа, размещаем слева
+      if (left + popoverWidth > viewportWidth - 20) {
+        left = badgeRect.left - popoverWidth - spacing;
+      }
+      
+      // Если не помещается слева, центрируем относительно бейджа
+      if (left < 20) {
+        left = badgeRect.left + (badgeRect.width / 2) - (popoverWidth / 2);
+      }
+      
+      // Проверка правого края
+      if (left + popoverWidth > viewportWidth - 20) {
+        left = viewportWidth - popoverWidth - 20;
+      }
+      
+      // Проверка левого края
+      if (left < 20) {
+        left = 20;
+      }
+      
+      // Выравниваем по вертикали с бейджем
+      top = badgeRect.top;
+      
+      // Проверка нижнего края - показываем сверху если не помещается
+      if (top + popoverHeight > viewportHeight - 20) {
+        top = badgeRect.top - popoverHeight - spacing;
+      }
+      
+      // Проверка верхнего края
+      if (top < 20) {
+        top = 20;
+      }
+      
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    }
+    
     badge.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
       isOpen = !isOpen;
-      popover.classList.toggle("ps-popover-visible", isOpen);
+      
+      if (isOpen) {
+        // Добавляем backdrop и попап в body
+        document.body.appendChild(backdrop);
+        document.body.appendChild(popover);
+        
+        updatePopoverPosition();
+        backdrop.classList.add("ps-backdrop-visible");
+        popover.classList.add("ps-popover-visible");
+        
+        // Обновляем позицию при скролле или ресайзе
+        const updatePosition = () => {
+          if (isOpen) updatePopoverPosition();
+        };
+        window.addEventListener("scroll", updatePosition, true);
+        window.addEventListener("resize", updatePosition);
+        
+        // Сохраняем обработчики для удаления
+        popover._scrollHandler = updatePosition;
+        popover._resizeHandler = updatePosition;
+      } else {
+        backdrop.classList.remove("ps-backdrop-visible");
+        popover.classList.remove("ps-popover-visible");
+        
+        // Удаляем backdrop и попап из body
+        setTimeout(() => {
+          if (backdrop.parentNode) backdrop.remove();
+          if (popover.parentNode === document.body) popover.remove();
+        }, 300);
+        
+        if (popover._scrollHandler) {
+          window.removeEventListener("scroll", popover._scrollHandler, true);
+          window.removeEventListener("resize", popover._resizeHandler);
+        }
+      }
     });
 
-    document.addEventListener("click", (e) => {
-      if (isOpen && !wrapper.contains(e.target)) {
+    backdrop.addEventListener("click", () => {
+      if (isOpen) {
         isOpen = false;
+        
+        backdrop.classList.remove("ps-backdrop-visible");
         popover.classList.remove("ps-popover-visible");
+        
+        setTimeout(() => {
+          if (backdrop.parentNode) backdrop.remove();
+          if (popover.parentNode === document.body) popover.remove();
+        }, 300);
+        
+        if (popover._scrollHandler) {
+          window.removeEventListener("scroll", popover._scrollHandler, true);
+          window.removeEventListener("resize", popover._resizeHandler);
+        }
+      }
+    });
+    
+    document.addEventListener("click", (e) => {
+      if (isOpen && !wrapper.contains(e.target) && !popover.contains(e.target) && !backdrop.contains(e.target)) {
+        isOpen = false;
+        
+        backdrop.classList.remove("ps-backdrop-visible");
+        popover.classList.remove("ps-popover-visible");
+        
+        setTimeout(() => {
+          if (backdrop.parentNode) backdrop.remove();
+          if (popover.parentNode === document.body) popover.remove();
+        }, 300);
+        
+        if (popover._scrollHandler) {
+          window.removeEventListener("scroll", popover._scrollHandler, true);
+          window.removeEventListener("resize", popover._resizeHandler);
+        }
       }
     });
 
     wrapper.appendChild(badge);
-    wrapper.appendChild(popover);
     return wrapper;
   }
 
@@ -255,6 +379,8 @@
   function shouldSkipElement(el) {
     if (el.getAttribute(PS_BADGE_ATTR)) return true;
     if (el.closest(".ps-price-badge-wrapper")) return true;
+    // Исключаем элементы внутри попапа
+    if (el.closest(".ps-price-popover")) return true;
     if (el.nextElementSibling && el.nextElementSibling.classList.contains("ps-price-badge-wrapper")) return true;
     const parent = el.parentElement;
     if (parent) {
@@ -315,6 +441,8 @@
 
     for (const selector of PRICE_SELECTORS) {
       document.querySelectorAll(selector).forEach((el) => {
+        // Пропускаем элементы внутри попапа
+        if (el.closest(".ps-price-popover")) return;
         if (!processed.has(el)) {
           processed.add(el);
           processElement(el, true);
@@ -323,6 +451,8 @@
     }
 
     document.querySelectorAll("span").forEach((el) => {
+      // Пропускаем элементы внутри попапа
+      if (el.closest(".ps-price-popover")) return;
       if (processed.has(el)) return;
       if (el.getAttribute(PS_BADGE_ATTR)) return;
       if (el.children.length > 2) return;
@@ -344,8 +474,18 @@
     if (!settings.enabled) return;
     let shouldScan = false;
     for (const mutation of mutations) {
+      // Пропускаем изменения внутри попапа
+      if (mutation.target.closest && mutation.target.closest(".ps-price-popover")) {
+        continue;
+      }
       for (const node of mutation.addedNodes) {
-        if (node.nodeType === 1 && !node.classList?.contains("ps-price-badge-wrapper")) {
+        if (node.nodeType === 1) {
+          // Пропускаем элементы попапа и бейджей
+          if (node.classList?.contains("ps-price-badge-wrapper") || 
+              node.classList?.contains("ps-price-popover") ||
+              node.closest?.(".ps-price-popover")) {
+            continue;
+          }
           shouldScan = true;
           break;
         }
