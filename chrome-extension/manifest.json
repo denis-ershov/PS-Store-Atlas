@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "PS Store Atlas",
+  "version": "1.0.0",
+  "description": "Automatically converts PlayStation Store prices to your local currency using live exchange rates from CBR and Frankfurter APIs.",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://store.playstation.com/*",
+    "https://www.cbr-xml-daily.ru/*",
+    "https://api.frankfurter.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://store.playstation.com/*"],
+      "js": ["content-script.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}

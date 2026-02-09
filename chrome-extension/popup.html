@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PS Store Atlas</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
+          </svg>
+        </div>
+        <div class="header-text">
+          <span class="header-title" data-i18n="appName">PS Store Atlas</span>
+          <span class="header-sub" data-i18n="appSub">PlayStation Store</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <select id="lang-select" class="lang-select" title="Language">
+          <option value="en">EN</option>
+          <option value="ru">RU</option>
+          <option value="de">DE</option>
+          <option value="fr">FR</option>
+          <option value="es">ES</option>
+          <option value="pt">PT</option>
+          <option value="ja">JA</option>
+          <option value="zh">ZH</option>
+          <option value="tr">TR</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="toggle-card">
+        <div class="toggle-left">
+          <div class="toggle-icon-wrap">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="toggle-info">
+            <span class="toggle-label" data-i18n="enableExt">Enable Extension</span>
+            <span class="toggle-desc" data-i18n="enableDesc">Show converted prices</span>
+          </div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="enabled-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="section">
+        <label class="section-label" data-i18n="dataSource">Data Source</label>
+        <div class="select-wrap">
+          <select id="source-select">
+            <option value="CBR" data-i18n-option="sourceCBR">CBR (Central Bank of Russia)</option>
+            <option value="FRANKFURTER" data-i18n-option="sourceFrankfurter">Frankfurter (ECB)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <label class="section-label" data-i18n="targetCurrency">Target Currency</label>
+        <div class="select-wrap">
+          <select id="currency-select">
+            <option value="RUB">RUB — ₽</option>
+            <option value="USD">USD — $</option>
+            <option value="EUR">EUR — €</option>
+            <option value="GBP">GBP — £</option>
+            <option value="TRY">TRY — ₺</option>
+            <option value="INR">INR — ₹</option>
+            <option value="JPY">JPY — ¥</option>
+            <option value="CNY">CNY — ¥</option>
+            <option value="BRL">BRL — R$</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section">
+        <div class="section-header">
+          <label class="section-label" data-i18n="liveRates">Live Rates</label>
+          <span class="source-badge" id="source-badge">
+            <span class="source-dot"></span>
+            <span id="source-name">CBR</span>
+          </span>
+        </div>
+        <div class="rates-grid" id="rates-grid">
+          <div class="rate-loading" data-i18n="loadingRates">Loading rates...</div>
+        </div>
+        <div class="rate-updated" id="rate-updated"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span class="footer-version">v1.0.0</span>
+      <a href="https://store.playstation.com" target="_blank" class="footer-link" data-i18n="openStore">Open PS Store</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
